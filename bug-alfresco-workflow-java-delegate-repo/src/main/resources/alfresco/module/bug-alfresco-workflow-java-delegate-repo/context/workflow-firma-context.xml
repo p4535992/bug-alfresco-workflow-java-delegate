@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+	<bean id="workflow-WorkflowFirmaModel-bootstrap" parent="workflowDeployer">
+		<property name="workflowDefinitions">
+			<list>
+				<props>
+					<prop key="engineId">activiti</prop>
+					<prop key="location">alfresco/module/${project.artifactId}/workflows/workflowFirma.bpmn20.bpmn</prop>
+					<prop key="mimetype">text/xml</prop>
+					<prop key="redeploy">false</prop>
+				</props>
+			</list>
+		</property>
+		<property name="models">
+			<list>
+				<value>alfresco/module/${project.artifactId}/model/WorkflowFirmaModel.xml</value>
+			</list>
+		</property>
+		<property name="labels">
+			<list>
+				<value>alfresco.module.${project.artifactId}.messages.WorkflowFirma-repo</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>

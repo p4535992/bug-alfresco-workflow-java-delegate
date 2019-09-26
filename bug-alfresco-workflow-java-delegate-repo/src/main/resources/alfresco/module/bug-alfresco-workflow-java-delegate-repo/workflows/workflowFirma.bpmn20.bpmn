@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://alfresco.org">
+  <process id="activitiAdhocFirma" name="Adhoc Activiti Process Firma" isExecutable="true">
+    <userTask id="verifyTaskDone" name="Verify Adhoc Task Completed." activiti:assignee="${initiator.exists() ? initiator.properties.userName : 'admin'}" activiti:formKey="wf:completedAdhocTask">
+      <documentation>Verify the task was completed.</documentation>
+      <extensionElements>
+        <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                        if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                        
+                        if (wf_notifyMe)
+			            {
+			               var mail = actions.create("mail");
+			               mail.parameters.to = initiator.properties.email;
+			               mail.parameters.subject = "Adhoc Task " + bpm_workflowDescription;
+			               mail.parameters.from = bpm_assignee.properties.email;
+			               mail.parameters.text = "It's done";
+			               mail.execute(bpm_package);
+			            }]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow4" sourceRef="verifyTaskDone" targetRef="theEnd"></sequenceFlow>
+    <endEvent id="theEnd"></endEvent>
+    <startEvent id="startevent1" name="Start" activiti:formKey="wfcustomfirma:submitCustomWorkflowFirma"></startEvent>
+    <userTask id="usertask1" name="Firma Task" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wfcustomfirma:activitiReviewCustomWorkflowFirmaTask">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.someco.bpm.SignDocumentTask"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[logger.log("COMPLETE FIRMA TASK!");]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="adhocTask" name="Submit" isForCompensation="true" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
+      <extensionElements>
+        <activiti:field name="script">
+          <activiti:string><![CDATA[logger.log("CREATO WORKFLOW!");]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow3" sourceRef="usertask1" targetRef="verifyTaskDone"></sequenceFlow>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="adhocTask"></sequenceFlow>
+    <sequenceFlow id="flow2" sourceRef="adhocTask" targetRef="usertask1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_activitiAdhocFirma">
+    <bpmndi:BPMNPlane bpmnElement="activitiAdhocFirma" id="BPMNPlane_activitiAdhocFirma">
+      <bpmndi:BPMNShape bpmnElement="verifyTaskDone" id="BPMNShape_verifyTaskDone">
+        <omgdc:Bounds height="55.0" width="105.0" x="590.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="theEnd" id="BPMNShape_theEnd">
+        <omgdc:Bounds height="35.0" width="35.0" x="800.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="20.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="360.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="adhocTask" id="BPMNShape_adhocTask">
+        <omgdc:Bounds height="55.0" width="105.0" x="160.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="695.0" y="217.0"></omgdi:waypoint>
+        <omgdi:waypoint x="800.0" y="217.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="465.0" y="217.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.0" y="217.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="55.0" y="217.0"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="217.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="265.0" y="217.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="217.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
