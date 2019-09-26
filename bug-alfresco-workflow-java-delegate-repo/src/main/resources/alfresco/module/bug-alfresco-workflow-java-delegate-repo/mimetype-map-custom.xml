@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+		<!--
+		
+		Qui si definiscono mimetype per tutto alfresco ma conviene settarli
+		su /src/main/amp/config/alfresco/extension/mimetype/*map.xml
+		in genere il nome standard e' "custom-mimetype-map.xml"
+		
+		NOTA: il nome del file corrente "mimetype-map-custom.xml" non deve cambiare
+		per essere riconosciuto da alfresco
+		
+		NOTA: Per settare i mimetype per i transformer anche se non e' scritto
+		nella documetnazione sembra necessario settare un file di mimetype 
+		nel modulo corrente :
+		/src/main/resources/alfresco/module/${project.artifactId}/mimetype/mimetype-map.xml
+		 
+		 -->
+ </beans>
